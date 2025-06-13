@@ -10,6 +10,16 @@ poketools := extras/pokemontools
 gfx       := $(PYTHON) gfx.py
 includes  := $(PYTHON) $(poketools)/scan_includes.py
 
+ifneq ($(wildcard rgbds/.*),)
+RGBDS := rgbds/
+else
+RGBDS :=
+endif
+
+RGBASM := $(RGBDS)rgbasm
+RGBFIX := $(RGBDS)rgbfix
+RGBGFX := $(RGBDS)rgbgfx
+RGBLINK := $(RGBDS)rgblink
 
 crystal11_obj := \
 wram11.o \
@@ -62,15 +72,15 @@ compare: pokecrystal.gbc pokecrystal11.gbc
 
 %.asm: ;
 $(all_obj): $$*.asm $$($$*_dep)
-	rgbasm -o $@ $<
+	$(RGBASM) -o $@ $<
 
 pokecrystal11.gbc: $(crystal11_obj)
-	rgblink -n $*.sym -m $*.map -o $@ $^
-	rgbfix -Cjv -i BYTE -k 01 -l 0x33 -m 0x10 -n 1 -p 0 -r 3 -t PM_CRYSTAL $@
+	$(RGBLINK) -n $*.sym -m $*.map -o $@ $^
+	$(RGBGFX) -Cjv -i BYTE -k 01 -l 0x33 -m 0x10 -n 1 -p 0 -r 3 -t PM_CRYSTAL $@
 
 pokecrystal.gbc: $(crystal_obj)
-	rgblink -n $*.sym -m $*.map -o $@ $^
-	rgbfix -Cjv -i BYTE -k 01 -l 0x33 -m 0x10 -p 0 -r 3 -t PM_CRYSTAL $@
+	$(RGBLINK) -n $*.sym -m $*.map -o $@ $^
+	$(RGBGFX) -Cjv -i BYTE -k 01 -l 0x33 -m 0x10 -p 0 -r 3 -t PM_CRYSTAL $@
 
 
 pngs:
